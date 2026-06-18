@@ -1,0 +1,37 @@
+name: Compile iMugen Port
+on: [push]
+
+jobs:
+  build-ios-ipa:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Initialize Go Toolchain
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      - name: Assemble iOS Structure
+        run: |
+          mkdir -p Payload/iMugen.app
+          cp -r data font sound Payload/iMugen.app/
+          cp src/Info.plist Payload/iMugen.app/Info.plist
+
+      - name: Build Arm64 Engine Binary
+        run: |
+          export GOOS=darwin
+          export GOARCH=arm64
+          export CGO_ENABLED=1
+          go build -tags netgo -o Payload/iMugen.app/iMugen src/main.go
+
+      - name: Compress IPA Package
+        run: |
+          zip -r iMugen.ipa Payload/
+
+      - name: Output Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: iMugen-IPA
+          path: iMugen.ipa
