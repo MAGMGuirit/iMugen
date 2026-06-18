@@ -16,21 +16,13 @@ jobs:
       - name: Assemble iOS Structure
         run: |
           mkdir -p Payload/iMugen.app
-          mkdir -p Payload/iMugen.app/data
-          mkdir -p Payload/iMugen.app/font
-          mkdir -p Payload/iMugen.app/sound
           
-          # Copy asset directories if they contain files
-          if [ "$(find data -type f 2>/dev/null | wc -l)" -gt 0 ]; then
-            cp -r data/* Payload/iMugen.app/data/ 2>/dev/null || true
-          fi
-          if [ "$(find font -type f 2>/dev/null | wc -l)" -gt 0 ]; then
-            cp -r font/* Payload/iMugen.app/font/ 2>/dev/null || true
-          fi
-          if [ "$(find sound -type f 2>/dev/null | wc -l)" -gt 0 ]; then
-            cp -r sound/* Payload/iMugen.app/sound/ 2>/dev/null || true
-          fi
+          # Copy asset directories only if they exist
+          [ -d data ] && cp -r data Payload/iMugen.app/ || true
+          [ -d font ] && cp -r font Payload/iMugen.app/ || true
+          [ -d sound ] && cp -r sound Payload/iMugen.app/ || true
           
+          # Copy plist configuration
           cp src/Info.plist Payload/iMugen.app/Info.plist
 
       - name: Build Arm64 Engine Binary
