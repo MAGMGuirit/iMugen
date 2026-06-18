@@ -16,7 +16,9 @@ jobs:
       - name: Assemble iOS Structure
         run: |
           mkdir -p Payload/iMugen.app
-          cp -r data font sound Payload/iMugen.app/
+          [ -d data ] && cp -r data Payload/iMugen.app/ || true
+          [ -d font ] && cp -r font Payload/iMugen.app/ || true
+          [ -d sound ] && cp -r sound Payload/iMugen.app/ || true
           cp src/Info.plist Payload/iMugen.app/Info.plist
 
       - name: Build Arm64 Engine Binary
